@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./ProductList.css";
 import CartItem from "./CartItem";
 import { addItem } from "./CartSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 function ProductList() {
   const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
   const [showCart, setShowCart] = useState(false);
-  const [showPlants, setShowPlants] = useState(false);
   const [addedToCart, setAddedToCart] = useState({});
 
   const plantsArray = [
@@ -253,6 +253,18 @@ function ProductList() {
     },
   ];
 
+  useEffect(() => {
+    if (cartItems) {
+      const product = {};
+      cartItems.forEach((item) => {
+        if (!product[item.name]) {
+          product[item.name] = true;
+        }
+      });
+      setAddedToCart(product);
+    }
+  }, [cartItems]);
+
   const styleObj = {
     backgroundColor: "#4CAF50",
     color: "#fff!important",
@@ -268,15 +280,16 @@ function ProductList() {
     color: "white",
     fontSize: "30px",
     textDecoration: "none",
+    width: "fit-content",
   };
 
   const handleCartClick = (e) => {
     e.preventDefault();
     setShowCart(true);
   };
+
   const handlePlantsClick = (e) => {
     e.preventDefault();
-    setShowPlants(true);
     setShowCart(false);
   };
 
@@ -287,10 +300,6 @@ function ProductList() {
 
   const handleAddToCart = (product) => {
     dispatch(addItem(product));
-    setAddedToCart((prevState) => ({
-      ...prevState,
-      [product.name]: true,
-    }));
   };
 
   return (
@@ -320,6 +329,9 @@ function ProductList() {
         <div style={{ textAlign: "right" }}>
           <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}>
             <h1 className="cart">
+              <p className="cart_quantity_count">
+                {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+              </p>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 256 256"
@@ -373,8 +385,11 @@ function ProductList() {
                     <p className="product-price">{plant.cost}</p>
                     <p className="product-description">{plant.description}</p>
                     <button
-                      className="product-button"
+                      className={`product-button ${
+                        addedToCart[plant.name] ? "added-to-cart" : ""
+                      }`}
                       onClick={() => handleAddToCart(plant)}
+                      disabled={addedToCart[plant.name] || false}
                     >
                       Add to Cart
                     </button>

@@ -161,14 +161,15 @@ body {
   color: white;
   display: flex;
   justify-content: end;
+  position: relative;
 }
 
 .cart_quantity_count {
-  margin-top: 16px;
-  /* background-color: red; */
-  margin-left: 27px;
+  margin-top: 10px;
+  right: 24px;
   position: absolute;
   font-size: 29px;
+  cursor: pointer;
 }
 
 .plantname_heading {
@@ -215,6 +216,7 @@ body {
 
 .product-button.added-to-cart {
   background-color: grey;
+  cursor: default;
 }
 
 @media (max-width: 1200px) {
